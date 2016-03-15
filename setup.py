@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+import pip
 
 try:
     from setuptools import setup, find_packages
@@ -9,7 +10,12 @@ except ImportError:
 
 from pip.req import parse_requirements
 
-install_reqs = parse_requirements('requirements.txt')
+try:
+    # parse_requirements() returns generator of pip.req.InstallRequirement objects
+    install_reqs = parse_requirements('requirements.txt', session=pip.download.PipSession())
+except AttributeError:
+    # compatibility for pip < 1.5.6
+    install_reqs = parse_requirements('requirements.txt')
 
 reqs = [str(ir.req) for ir in install_reqs]
 
